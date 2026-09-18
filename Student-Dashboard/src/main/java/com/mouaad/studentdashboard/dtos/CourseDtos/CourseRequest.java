@@ -15,7 +15,7 @@ public class CourseRequest {
 
     private String description;
     @NotNull(message = "Credits are required")
-    @Min(value = 1, message = "Course must have at lease 1 credits")
+    @Min(value = 1, message = "Course must have at least 1 credit")
     private Integer credits;
 }
 

@@ -3,11 +3,15 @@ package com.mouaad.studentdashboard.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "students")
-@Data
+@Getter
+@Setter
+@ToString(exclude = "enrollments")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student {
@@ -32,5 +36,5 @@ public class Student {
 
     // One student can have many enrollments
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<Enrollment> enrollments;
+    private List<Enrollment> enrollments = new ArrayList<>();
 }

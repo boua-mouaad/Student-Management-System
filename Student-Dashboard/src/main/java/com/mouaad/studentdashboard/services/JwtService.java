@@ -13,10 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import java.nio.charset.StandardCharsets;
+
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "YourSuperSecretKeyForStudentDashboardWhichNeedsToBeAtLeast256BitsLong=";
+    @Value("${application.security.jwt.secret-key:YourSuperSecretKeyForStudentDashboardWhichNeedsToBeAtLeast256BitsLong=}")
+    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -64,7 +68,12 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (Exception e) {
+            byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+            return Keys.hmacShaKeyFor(keyBytes);
+        }
     }
 }

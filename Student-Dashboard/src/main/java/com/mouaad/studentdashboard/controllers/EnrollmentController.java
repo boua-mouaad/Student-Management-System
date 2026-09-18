@@ -24,7 +24,7 @@ public class EnrollmentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    //2.Updatze a student's grade
+    //2.Update a student's grade
     @PutMapping("/{id}/grade")
     public ResponseEntity<EnrollmentResponse> updateGrade(
             @PathVariable Long id,
@@ -32,5 +32,24 @@ public class EnrollmentController {
     ){
         EnrollmentResponse response = enrollmentService.updateGrade(id, request);
         return ResponseEntity.ok(response);
+    }
+
+    //3. Get all enrollments
+    @GetMapping
+    public ResponseEntity<java.util.List<EnrollmentResponse>> getAllEnrollments() {
+        return ResponseEntity.ok(enrollmentService.getAllEnrollments());
+    }
+
+    //4. Get enrollment by id
+    @GetMapping("/{id}")
+    public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable Long id) {
+        return ResponseEntity.ok(enrollmentService.getEnrollmentById(id));
+    }
+
+    //5. Delete enrollment
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEnrollment(@PathVariable Long id) {
+        enrollmentService.deleteEnrollment(id);
+        return ResponseEntity.noContent().build();
     }
 }

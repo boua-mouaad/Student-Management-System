@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class CourseController {
-    public final CourseService courseService;
+    private final CourseService courseService;
     //1.Fetch all courses
     @GetMapping
     public ResponseEntity<List<CourseResponse>> getAllCourses() {
@@ -44,5 +44,12 @@ public class CourseController {
     public ResponseEntity<CourseResponse> addCourse(@Valid @RequestBody CourseRequest request){
         CourseResponse newCourse = courseService.addCourse(request);
         return new ResponseEntity<>(newCourse, HttpStatus.CREATED);
+    }
+
+    //5. Delete a course
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return ResponseEntity.noContent().build();
     }
 }

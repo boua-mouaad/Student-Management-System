@@ -5,7 +5,10 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "enrollments")
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"student", "course"})
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Enrollment {

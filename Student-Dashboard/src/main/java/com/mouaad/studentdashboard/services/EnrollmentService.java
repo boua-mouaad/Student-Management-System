@@ -15,9 +15,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.mouaad.studentdashboard.exceptions.DuplicateResourceException;
+import com.mouaad.studentdashboard.exceptions.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final StudentRepository studentRepository;
@@ -26,24 +32,22 @@ public class EnrollmentService {
     //1. Enroll a student in a course
     public EnrollmentResponse enrollStudent(EnrollmentRequest request) {
         //Step A : find the course and the student
-        Student student = studentRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        Student student = studentRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + request.getStudentId()));
         Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + request.getCourseId()));
 
         //Step B: check if already enrolled to prevent duplicates
-        List<Enrollment> existingEnrollments = enrollmentRepository.findByStudentId(student.getId());
-        boolean isAlreadyEnrolled = existingEnrollments.stream()
-                .anyMatch(enrollment -> enrollment.getCourse().getId().equals(course.getId()));
-
-        if (isAlreadyEnrolled) {
-            throw new RuntimeException("Student is already enrolled in this course");
+        if (enrollmentRepository.existsByStudentIdAndCourseId(student.getId(), course.getId())) {
+            throw new DuplicateResourceException("Student is already enrolled in this course");
         }
+
         //Step C: create and save the new enrollment
         Enrollment enrollment = new Enrollment();
         enrollment.setStudent(student);
         enrollment.setCourse(course);
         enrollment.setEnrollmentDate(LocalDate.now());
+        enrollment.setStatus(EnrollmentStatus.ACTIVE);
 
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
         return mapToResponse(savedEnrollment);
@@ -52,13 +56,34 @@ public class EnrollmentService {
     //2.Save and update a grade
     public EnrollmentResponse updateGrade(Long enrollmentId, GradeUpdateRequest request) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found with id " + enrollmentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
         enrollment.setGrade(request.getGrade());
-    //if a grade is assigned , the status becomes COMPLETED
+        //if a grade is assigned , the status becomes COMPLETED
         enrollment.setStatus(EnrollmentStatus.COMPLETED);
 
         Enrollment updatedEnrollment = enrollmentRepository.save(enrollment);
         return mapToResponse(updatedEnrollment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnrollmentResponse> getAllEnrollments() {
+        return enrollmentRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public EnrollmentResponse getEnrollmentById(Long id) {
+        Enrollment enrollment = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + id));
+        return mapToResponse(enrollment);
+    }
+
+    public void deleteEnrollment(Long id) {
+        if (!enrollmentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Enrollment not found with id: " + id);
+        }
+        enrollmentRepository.deleteById(id);
     }
 
 

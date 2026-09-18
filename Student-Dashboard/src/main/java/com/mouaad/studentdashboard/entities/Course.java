@@ -2,11 +2,15 @@ package com.mouaad.studentdashboard.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "courses")
-@Data
+@Getter
+@Setter
+@ToString(exclude = "enrollments")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Course {
@@ -28,5 +32,5 @@ public class Course {
     private Integer credits;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
-    private List<Enrollment> enrollments;
+    private List<Enrollment> enrollments = new ArrayList<>();
 }

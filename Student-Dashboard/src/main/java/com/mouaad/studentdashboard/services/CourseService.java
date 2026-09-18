@@ -9,15 +9,22 @@ import com.mouaad.studentdashboard.repositories.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.mouaad.studentdashboard.exceptions.DuplicateResourceException;
+import com.mouaad.studentdashboard.exceptions.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CourseService {
     private final CourseRepository courseRepository;
 
     //1.Get all courses
+    @Transactional(readOnly = true)
     public List<CourseResponse> getAllCourses() {
         return courseRepository.findAll()
                 .stream().map(this::mapToCourseResponse)
@@ -25,17 +32,18 @@ public class CourseService {
     }
 
     //2.Get a single course
+    @Transactional(readOnly = true)
     public CourseDetailsResponse getCourseById(Long id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
 
         return mapToCourseDetailsResponse(course);
     }
 
     //3. Add a new course
     public CourseResponse addCourse(CourseRequest request) {
-        if (courseRepository.findByCourseCode(request.getCourseCode()).isPresent()) {
-            throw new RuntimeException("A course with this code is already exists");
+        if (courseRepository.existsByCourseCode(request.getCourseCode())) {
+            throw new DuplicateResourceException("A course with code '" + request.getCourseCode() + "' already exists");
         }
 
         Course course = new Course();
@@ -51,13 +59,28 @@ public class CourseService {
     //4. Update an existing course
     public CourseResponse updateCourse(Long id, CourseRequest request) {
         Course existingCourse = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+
+        if (!existingCourse.getCourseCode().equalsIgnoreCase(request.getCourseCode()) &&
+                courseRepository.existsByCourseCode(request.getCourseCode())) {
+            throw new DuplicateResourceException("A course with code '" + request.getCourseCode() + "' already exists");
+        }
+
+        existingCourse.setCourseCode(request.getCourseCode());
         existingCourse.setCourseName(request.getCourseName());
         existingCourse.setDescription(request.getDescription());
         existingCourse.setCredits(request.getCredits());
 
         Course updatedCourse = courseRepository.save(existingCourse);
         return mapToCourseResponse(updatedCourse);
+    }
+
+    //5. Delete a course
+    public void deleteCourse(Long id) {
+        if (!courseRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Course not found with id: " + id);
+        }
+        courseRepository.deleteById(id);
     }
 
     // --- Private Helper Mapping Methods ---
@@ -79,7 +102,9 @@ public class CourseService {
         response.setDescription(course.getDescription());
         response.setCredits(course.getCredits());
 
-        List<StudentSummaryDto> studentSummaries = course.getEnrollments().stream()
+        List<StudentSummaryDto> studentSummaries = (course.getEnrollments() == null)
+                ? Collections.emptyList()
+                : course.getEnrollments().stream()
                 .map(enrollment -> {
                     StudentSummaryDto dto = new StudentSummaryDto();
                     dto.setStudentId(enrollment.getStudent().getId());
