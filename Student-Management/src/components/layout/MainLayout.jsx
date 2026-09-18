@@ -1,15 +1,21 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import Header from './Header';
+import Navbar from './Navbar';
 
 export default function MainLayout() {
+  const token = localStorage.getItem('jwt_token');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-[#fafafa]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-8">
+        <Navbar />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#fafafa] p-6">
           <Outlet />
         </main>
       </div>

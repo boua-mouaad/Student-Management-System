@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [portalMode, setPortalMode] = useState('staff'); 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -23,9 +24,17 @@ export default function Login() {
         password: password
       });
 
-      const token = response.data.token;
+      const { token, role } = response.data;
       localStorage.setItem('jwt_token', token);
-      navigate('/dashboard');
+      localStorage.setItem('user_email', response.data.email);
+      localStorage.setItem('user_role', role);
+
+      // Route based on role
+      if (role === 'ROLE_STUDENT') {
+        navigate('/student/schedule');
+      } else {
+        navigate('/dashboard');
+      }
       
     } catch (err) {
       setError('Invalid credentials or server offline. Please try again.');
@@ -43,20 +52,33 @@ export default function Login() {
             <BookOpen size={32} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">AcademiaOS</h1>
-          <p className="text-sm text-gray-500 mt-1">Registrar & Administration Portal</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {portalMode === 'staff' ? 'Registrar & Administration' : 'Student Access Portal'}
+          </p>
         </div>
 
         <div className="flex bg-gray-100 p-1 rounded-lg mb-6">
-          <button className="flex-1 bg-white text-gray-900 text-sm font-medium py-2 rounded-md shadow-sm border border-gray-200">
+          <button 
+            type="button"
+            onClick={() => setPortalMode('staff')}
+            className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${
+              portalMode === 'staff' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
             Faculty / Staff
           </button>
-          <button className="flex-1 text-gray-500 text-sm font-medium py-2 hover:text-gray-700">
+          <button 
+            type="button"
+            onClick={() => setPortalMode('student')}
+            className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${
+              portalMode === 'student' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
             Student Portal
           </button>
         </div>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-2">
-          
           {error && (
             <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-2 border border-red-100">
               {error}
@@ -64,11 +86,13 @@ export default function Login() {
           )}
 
           <div className="flex justify-between items-end mb-1">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Work Email</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              {portalMode === 'staff' ? 'Work Email' : 'Student Email'}
+            </span>
           </div>
           <InputField 
             type="email"
-            placeholder="e.vance@university.edu"
+            placeholder={portalMode === 'staff' ? "e.vance@university.edu" : "student@student.edu"}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -85,30 +109,13 @@ export default function Login() {
             required
           />
 
-          <div className="flex items-center justify-between mt-2 mb-4">
-            <label className="flex items-center text-xs text-gray-600 cursor-pointer">
-              <input type="checkbox" className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-              Remember me for 30 days
-            </label>
-            <a href="#" className="text-xs text-indigo-600 font-medium hover:underline">
-              Forgot password?
-            </a>
-          </div>
-
           <Button 
-            text={isLoading ? "Authenticating..." : "Sign In to Workspace →"} 
+            text={isLoading ? "Authenticating..." : `Sign In to ${portalMode === 'staff' ? 'Workspace' : 'Portal'} →`} 
             onClick={handleLogin} 
-            className={`w-full py-2.5 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`w-full py-2.5 mt-4 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
             disabled={isLoading}
           />
         </form>
-
-        <div className="mt-8 text-center border-t border-gray-100 pt-6">
-          <p className="text-xs text-gray-400">
-            Secured by University Single Sign-On (SSO).<br />
-            Need access? <a href="#" className="text-indigo-600 hover:underline">Contact IT Helpdesk</a>
-          </p>
-        </div>
       </div>
     </div>
   );

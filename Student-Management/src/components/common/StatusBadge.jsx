@@ -1,27 +1,22 @@
 import React from 'react';
 
-function StatusBadge(props) {
-  // Default colors (Gray)
-  let bgColor = "bg-gray-100";
-  let textColor = "text-gray-700";
-  let dotColor = "bg-gray-400";
-
-  // Change colors based on the status text
-  if (props.status === "Active") {
-    bgColor = "bg-green-100";
-    textColor = "text-green-700";
-    dotColor = "bg-green-500";
-  } else if (props.status === "Inactive") {
-    bgColor = "bg-red-100";
-    textColor = "text-red-700";
-    dotColor = "bg-red-500";
-  }
+export default function StatusBadge({ status }) {
+  const getStyles = () => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'COMPLETED':
+        return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+      case 'DROPPED':
+        return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-white ${bgColor} ${textColor}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
-      {props.status}
+    <span className={`px-2 py-1 rounded text-xs font-bold border uppercase tracking-wider ${getStyles()}`}>
+      {status || 'UNKNOWN'}
     </span>
   );
 }
-export default StatusBadge;
