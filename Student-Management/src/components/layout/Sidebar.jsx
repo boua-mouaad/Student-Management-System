@@ -48,14 +48,17 @@ export default function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-gray-200 flex flex-col gap-1">
-        <NavLink to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-          <Settings size={18} />
-          System Settings
-        </NavLink>
-        <button className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors w-full text-left">
+        <div className="flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed">
+          <div className="flex items-center gap-3">
+            <Settings size={18} />
+            System Settings
+          </div>
+          <span className="text-[10px] uppercase font-bold bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">Soon</span>
+        </div>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed w-full text-left">
           <HelpCircle size={18} />
           Support Helpdesk
-        </button>
+        </div>
       </div>
     </div>
   );

@@ -27,10 +27,15 @@ export default function AddCourse() {
     setError(null);
 
     try {
-      const response = await api.post('/courses', formData);
+      const payload = {
+        ...formData,
+        credits: parseInt(formData.credits, 10) || 1
+      };
+      const response = await api.post('/courses', payload);
       navigate(`/courses/${response.data.id}`);
     } catch (err) {
-      setError("Failed to create course record.");
+      const msg = err.response?.data?.message || "Failed to create course record.";
+      setError(msg);
       setIsSubmitting(false);
     }
   };
@@ -54,7 +59,7 @@ export default function AddCourse() {
         </div>
       )}
 
-      <div className="flex flex-col gap-6">
+      <form id="course-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div className="flex gap-3 mb-6">
             <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600 h-fit"><BookOpen size={20} /></div>
@@ -82,7 +87,7 @@ export default function AddCourse() {
             ></textarea>
           </div>
         </div>
-      </div>
+      </form>
 
       <div className="fixed bottom-0 right-0 left-64 bg-white border-t border-gray-200 p-4 flex justify-between items-center z-10">
         <div className="flex items-center gap-4 text-sm text-gray-500 ml-8">
@@ -93,9 +98,10 @@ export default function AddCourse() {
             Cancel
           </Link>
           <Button 
+            type="submit"
+            form="course-form"
             text={isSubmitting ? "Saving..." : "Save Course"} 
             className={`flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-            onClick={handleSubmit}
             disabled={isSubmitting}
           />
         </div>

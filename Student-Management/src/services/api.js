@@ -25,7 +25,7 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401 && !error.config.url.includes('/auth/login')) {
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('user_email');
       localStorage.removeItem('user_role');

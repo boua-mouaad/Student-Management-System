@@ -101,6 +101,7 @@ public class StudentService {
         response.setFirstName(student.getFirstName());
         response.setLastName(student.getLastName());
         response.setEmail(student.getEmail());
+        response.setDateOfBirth(student.getDateOfBirth());
         response.setRegistrationNumber(student.getRegistrationNumber());
         return response;
     }

@@ -48,8 +48,12 @@ export default function MySchedule() {
           {enrollments.map((enrollment) => (
             <div key={enrollment.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
               <div className="bg-indigo-600 px-5 py-4">
-                <span className="text-indigo-100 text-xs font-bold uppercase tracking-wider">{enrollment.course?.courseCode}</span>
-                <h3 className="text-white text-lg font-bold leading-tight mt-1">{enrollment.course?.courseName}</h3>
+                <span className="text-indigo-100 text-xs font-bold uppercase tracking-wider">
+                  {enrollment.courseCode || enrollment.course?.courseCode || 'COURSE'}
+                </span>
+                <h3 className="text-white text-lg font-bold leading-tight mt-1">
+                  {enrollment.courseName || enrollment.course?.courseName || 'Enrolled Course'}
+                </h3>
               </div>
               
               <div className="p-5 flex flex-col gap-4 flex-1">
@@ -65,7 +69,7 @@ export default function MySchedule() {
                   <Clock size={18} className="text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm font-bold text-gray-900">{enrollment.course?.startTime || '10:00 AM'} - {enrollment.course?.endTime || '11:30 AM'}</div>
-                    <div className="text-xs text-gray-500">{enrollment.course?.credits} Credit Hours</div>
+                    <div className="text-xs text-gray-500">{enrollment.credits || enrollment.course?.credits || 3} Credit Hours</div>
                   </div>
                 </div>
 

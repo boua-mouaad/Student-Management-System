@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, UserPlus } from 'lucide-react';
 import api from '../../services/api';
+import StatusBadge from '../../components/common/StatusBadge';
 
 export default function Enrollments() {
   const [enrollments, setEnrollments] = useState([]);
@@ -60,28 +61,35 @@ export default function Enrollments() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {enrollments.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-gray-900">{row.student?.firstName} {row.student?.lastName}</div>
-                      <div className="text-xs text-gray-500">{row.student?.registrationNumber}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-gray-900">{row.course?.courseCode}</div>
-                      <div className="text-xs text-gray-500">{row.course?.courseName}</div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{row.enrollmentDate}</td>
-                    <td className="px-6 py-4">
-                      <span className="bg-gray-100 px-2 py-1 rounded text-xs font-bold text-gray-700">{row.status}</span>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-bold text-indigo-600">{row.grade || '-'}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-end gap-3 text-gray-400">
-                        <Link to={`/enrollments/${row.id}`} className="hover:text-indigo-600"><Eye size={16} /></Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {enrollments.map((row) => {
+                  const studentDisplayName = row.studentName || (row.student ? `${row.student.firstName} ${row.student.lastName}` : 'Unknown Student');
+                  const regNo = row.registrationNumber || row.student?.registrationNumber || `ID: ${row.studentId}`;
+                  const courseDisplayCode = row.courseCode || row.course?.courseCode || 'Course';
+                  const courseDisplayName = row.courseName || row.course?.courseName || '';
+
+                  return (
+                    <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-bold text-gray-900">{studentDisplayName}</div>
+                        <div className="text-xs text-gray-500">{regNo}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-bold text-gray-900">{courseDisplayCode}</div>
+                        <div className="text-xs text-gray-500">{courseDisplayName}</div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{row.enrollmentDate}</td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={row.status} />
+                      </td>
+                      <td className="px-6 py-4 text-sm font-bold text-indigo-600">{row.grade || '-'}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-end gap-3 text-gray-400">
+                          <Link to={`/enrollments/${row.id}`} className="hover:text-indigo-600"><Eye size={16} /></Link>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

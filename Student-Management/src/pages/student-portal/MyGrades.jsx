@@ -85,10 +85,10 @@ export default function MyGrades() {
                 ) : (
                   enrollments.map((row) => (
                     <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-600">{row.termSection || 'Historical Term'}</td>
-                      <td className="px-6 py-4 text-sm font-bold text-indigo-600">{row.course?.courseCode}</td>
-                      <td className="px-6 py-4 text-sm font-bold text-gray-900">{row.course?.courseName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{row.course?.credits}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{row.termSection || 'Current Academic Term'}</td>
+                      <td className="px-6 py-4 text-sm font-bold text-indigo-600">{row.courseCode || row.course?.courseCode || 'COURSE'}</td>
+                      <td className="px-6 py-4 text-sm font-bold text-gray-900">{row.courseName || row.course?.courseName || 'Course'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{row.credits || row.course?.credits || 3}</td>
                       <td className="px-6 py-4">
                         <span className="text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">{row.grade}</span>
                       </td>

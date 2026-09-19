@@ -5,9 +5,14 @@ import Navbar from './Navbar';
 
 export default function MainLayout() {
   const token = localStorage.getItem('jwt_token');
+  const userRole = localStorage.getItem('user_role');
 
   if (!token) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (userRole === 'ROLE_STUDENT') {
+    return <Navigate to="/student/schedule" replace />;
   }
 
   return (

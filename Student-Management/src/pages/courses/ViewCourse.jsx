@@ -55,6 +55,41 @@ export default function ViewCourse() {
           </div>
         </div>
       </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-2">
+        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-base font-bold text-gray-900">Enrolled Students</h2>
+          <Link to="/enrollments/new" className="text-xs font-medium text-indigo-600 hover:underline">
+            + Enroll Student
+          </Link>
+        </div>
+        {(!course.enrolledStudents || course.enrolledStudents.length === 0) ? (
+          <div className="p-6 text-center text-sm text-gray-500">No students are currently enrolled in this course.</div>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3">Student Name</th>
+                <th className="px-6 py-3">Registration #</th>
+                <th className="px-6 py-3">Grade</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 text-sm">
+              {course.enrolledStudents.map((s, i) => (
+                <tr key={i} className="hover:bg-gray-50">
+                  <td className="px-6 py-3 font-bold text-gray-900">
+                    <Link to={`/students/${s.studentId}`} className="hover:text-indigo-600 hover:underline">
+                      {s.firstName} {s.lastName}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-3 text-gray-600">{s.registrationNumber}</td>
+                  <td className="px-6 py-3 font-semibold text-indigo-600">{s.grade || 'Not Graded'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

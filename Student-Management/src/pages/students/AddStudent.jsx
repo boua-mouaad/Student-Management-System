@@ -55,7 +55,7 @@ export default function AddStudent() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form id="student-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div className="flex gap-3 mb-6">
             <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600 h-fit"><User size={20} /></div>
@@ -89,9 +89,10 @@ export default function AddStudent() {
             Cancel
           </Link>
           <Button 
+            type="submit"
+            form="student-form"
             text={isSubmitting ? "Processing..." : "Create Student Record"} 
             className={`flex items-center gap-2 px-6 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`} 
-            onClick={handleSubmit}
             disabled={isSubmitting}
           />
         </div>

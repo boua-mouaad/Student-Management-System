@@ -64,11 +64,10 @@ export default function Students() {
                     <td className="px-6 py-4 text-sm font-bold text-gray-900">{student.firstName} {student.lastName}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{student.registrationNumber}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{student.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{student.dateOfBirth}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{student.dateOfBirth || '-'}</td>
                     <td className="px-6 py-4">
                       <div className="flex justify-end gap-2 text-gray-400">
-                        <Link to={`/students/${student.id}`} className="hover:text-indigo-600"><Eye size={16} /></Link>
-                        <button className="hover:text-indigo-600"><Edit2 size={16} /></button>
+                        <Link to={`/students/${student.id}`} className="hover:text-indigo-600" title="View details"><Eye size={16} /></Link>
                       </div>
                     </td>
                   </tr>

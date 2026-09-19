@@ -95,10 +95,13 @@ public class EnrollmentService {
         // Pull data from the connected Student entity
         response.setStudentId(enrollment.getStudent().getId());
         response.setStudentName(enrollment.getStudent().getFirstName() + " " + enrollment.getStudent().getLastName());
+        response.setRegistrationNumber(enrollment.getStudent().getRegistrationNumber());
 
         // Pull data from the connected Course entity
         response.setCourseId(enrollment.getCourse().getId());
         response.setCourseName(enrollment.getCourse().getCourseName());
+        response.setCourseCode(enrollment.getCourse().getCourseCode());
+        response.setCredits(enrollment.getCourse().getCredits());
 
         // Pull data from the Enrollment itself
         response.setEnrollmentDate(enrollment.getEnrollmentDate());

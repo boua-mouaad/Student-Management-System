@@ -10,7 +10,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [portalMode, setPortalMode] = useState('staff'); 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -20,7 +19,7 @@ export default function Login() {
 
     try {
       const response = await api.post('/auth/login', {
-        email: email,
+        email: email.trim(),
         password: password
       });
 
@@ -37,7 +36,8 @@ export default function Login() {
       }
       
     } catch (err) {
-      setError('Invalid credentials or server offline. Please try again.');
+      const errorMsg = err.response?.data?.message || 'Invalid email or password. Please check your credentials.';
+      setError(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -53,29 +53,8 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">AcademiaOS</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {portalMode === 'staff' ? 'Registrar & Administration' : 'Student Access Portal'}
+            Sign in with your email and password
           </p>
-        </div>
-
-        <div className="flex bg-gray-100 p-1 rounded-lg mb-6">
-          <button 
-            type="button"
-            onClick={() => setPortalMode('staff')}
-            className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${
-              portalMode === 'staff' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Faculty / Staff
-          </button>
-          <button 
-            type="button"
-            onClick={() => setPortalMode('student')}
-            className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${
-              portalMode === 'student' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Student Portal
-          </button>
         </div>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-2">
@@ -87,15 +66,16 @@ export default function Login() {
 
           <div className="flex justify-between items-end mb-1">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {portalMode === 'staff' ? 'Work Email' : 'Student Email'}
+              Email Address
             </span>
           </div>
           <InputField 
             type="email"
-            placeholder={portalMode === 'staff' ? "e.vance@university.edu" : "student@student.edu"}
+            placeholder="e.g. user@university.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoComplete="email"
           />
           
           <div className="flex justify-between items-end mt-2 mb-1">
@@ -103,15 +83,16 @@ export default function Login() {
           </div>
           <InputField 
             type="password"
-            placeholder="••••••••••••"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="current-password"
           />
 
           <Button 
-            text={isLoading ? "Authenticating..." : `Sign In to ${portalMode === 'staff' ? 'Workspace' : 'Portal'} →`} 
-            onClick={handleLogin} 
+            type="submit"
+            text={isLoading ? "Signing in..." : "Sign In →"} 
             className={`w-full py-2.5 mt-4 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
             disabled={isLoading}
           />

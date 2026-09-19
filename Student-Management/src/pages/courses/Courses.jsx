@@ -65,8 +65,7 @@ export default function Courses() {
                     <td className="px-6 py-4 text-sm text-gray-600">{course.credits} CR</td>
                     <td className="px-6 py-4">
                       <div className="flex justify-end gap-2 text-gray-400">
-                        <Link to={`/courses/${course.id}`} className="hover:text-indigo-600"><Eye size={16} /></Link>
-                        <button className="hover:text-indigo-600"><Edit2 size={16} /></button>
+                        <Link to={`/courses/${course.id}`} className="hover:text-indigo-600" title="View details"><Eye size={16} /></Link>
                       </div>
                     </td>
                   </tr>

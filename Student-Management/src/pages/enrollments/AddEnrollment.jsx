@@ -51,10 +51,15 @@ export default function AddEnrollment() {
     setError(null);
 
     try {
-      const response = await api.post('/enrollments', formData);
+      const payload = {
+        studentId: parseInt(formData.studentId, 10),
+        courseId: parseInt(formData.courseId, 10)
+      };
+      const response = await api.post('/enrollments', payload);
       navigate(`/enrollments/${response.data.id}`);
     } catch (err) {
-      setError("Failed to create enrollment.");
+      const msg = err.response?.data?.message || "Failed to create enrollment.";
+      setError(msg);
       setIsSubmitting(false);
     }
   };
@@ -78,7 +83,7 @@ export default function AddEnrollment() {
         </div>
       )}
 
-      <div className="flex flex-col gap-6">
+      <form id="enrollment-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div className="flex gap-2 items-center mb-6">
             <BookOpen size={20} className="text-indigo-600" />
@@ -87,7 +92,7 @@ export default function AddEnrollment() {
 
           <div className="mb-6">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Student *</label>
-            <select name="studentId" value={formData.studentId} onChange={handleChange} className="w-full border border-gray-300 px-3 py-3 rounded-md bg-white focus:outline-none focus:border-indigo-500 text-sm">
+            <select name="studentId" value={formData.studentId} onChange={handleChange} required className="w-full border border-gray-300 px-3 py-3 rounded-md bg-white focus:outline-none focus:border-indigo-500 text-sm">
               <option value="">-- Select Student --</option>
               {students.map(student => (
                 <option key={student.id} value={student.id}>
@@ -99,7 +104,7 @@ export default function AddEnrollment() {
 
           <div className="mb-6">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Course *</label>
-            <select name="courseId" value={formData.courseId} onChange={handleChange} className="w-full border border-gray-300 px-3 py-3 rounded-md bg-white focus:outline-none focus:border-indigo-500 text-sm">
+            <select name="courseId" value={formData.courseId} onChange={handleChange} required className="w-full border border-gray-300 px-3 py-3 rounded-md bg-white focus:outline-none focus:border-indigo-500 text-sm">
               <option value="">-- Select Course --</option>
               {courses.map(course => (
                 <option key={course.id} value={course.id}>
@@ -119,10 +124,9 @@ export default function AddEnrollment() {
                 <option value="DROPPED">DROPPED</option>
               </select>
             </div>
-            <InputField label="Initial Grade (Optional)" type="text" name="grade" value={formData.grade} onChange={handleChange} />
           </div>
         </div>
-      </div>
+      </form>
 
       <div className="fixed bottom-0 right-0 left-64 bg-white border-t border-gray-200 p-4 flex justify-between items-center z-10">
         <div className="flex items-center gap-4 text-sm text-gray-500 ml-8">
@@ -133,9 +137,10 @@ export default function AddEnrollment() {
             Cancel
           </Link>
           <Button 
+            type="submit"
+            form="enrollment-form"
             text={isSubmitting ? "Processing..." : "Enroll Student"} 
             className={`flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-            onClick={handleSubmit}
             disabled={isSubmitting}
           />
         </div>
